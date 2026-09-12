@@ -9,6 +9,10 @@ export default async function Home() {
       <h1 className="text-3xl font-semibold">Trackyard</h1>
       <p className="text-gray-600">Beats marketplace and social platform.</p>
 
+      <Link href="/browse" className="underline">
+        Browse beats
+      </Link>
+
       {session?.user ? (
         <Link
           href="/profile"

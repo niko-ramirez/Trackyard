@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -34,6 +35,15 @@ export default async function ProfilePage() {
       </div>
 
       <ProfileForm name={user.name ?? ""} bio={user.bio ?? ""} />
+
+      <div className="flex gap-4 border-t pt-4 text-sm">
+        <Link href="/dashboard" className="underline">
+          Your tracks
+        </Link>
+        <Link href="/upload" className="underline">
+          Upload a beat
+        </Link>
+      </div>
     </main>
   );
 }

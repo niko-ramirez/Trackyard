@@ -43,6 +43,9 @@ export default async function ProfilePage() {
         <Link href="/upload" className="underline">
           Upload a beat
         </Link>
+        <Link href="/purchases" className="underline">
+          Your purchases
+        </Link>
       </div>
     </main>
   );

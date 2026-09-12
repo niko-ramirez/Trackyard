@@ -21,7 +21,10 @@ export default async function ProducerPage({
   const tracks = await db.track.findMany({
     where: { producerId: id, status: "ACTIVE" },
     orderBy: { createdAt: "desc" },
-    include: { producer: { select: { id: true, name: true } } },
+    include: {
+      producer: { select: { id: true, name: true } },
+      licenses: { where: { active: true } },
+    },
   });
 
   return (

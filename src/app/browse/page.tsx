@@ -45,7 +45,10 @@ export default async function BrowsePage({
       orderBy: { createdAt: sort === "oldest" ? "asc" : "desc" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      include: { producer: { select: { id: true, name: true } } },
+      include: {
+        producer: { select: { id: true, name: true } },
+        licenses: { where: { active: true } },
+      },
     }),
     db.track.count({ where }),
   ]);

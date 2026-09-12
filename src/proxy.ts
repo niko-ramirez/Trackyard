@@ -4,7 +4,7 @@ import { authConfig } from "@/lib/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
-const PROTECTED_PREFIXES = ["/profile"];
+const PROTECTED_PREFIXES = ["/profile", "/upload", "/dashboard"];
 
 export const proxy = auth((req) => {
   const isProtected = PROTECTED_PREFIXES.some((prefix) =>
@@ -19,5 +19,5 @@ export const proxy = auth((req) => {
 });
 
 export const config = {
-  matcher: ["/profile/:path*"],
+  matcher: ["/profile/:path*", "/upload/:path*", "/dashboard/:path*"],
 };

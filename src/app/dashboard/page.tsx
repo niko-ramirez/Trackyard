@@ -19,9 +19,14 @@ export default async function DashboardPage() {
     <main className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-16">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Your tracks</h1>
-        <Link href="/upload" className="rounded bg-black px-4 py-2 text-white">
-          Upload a beat
-        </Link>
+        <div className="flex gap-3">
+          <Link href={`/producers/${session.user.id}`} className="self-center text-sm underline">
+            View public page
+          </Link>
+          <Link href="/upload" className="rounded bg-black px-4 py-2 text-white">
+            Upload a beat
+          </Link>
+        </div>
       </div>
 
       {tracks.length === 0 ? (

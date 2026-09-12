@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { BuyForm } from "./buy-form";
 
 export default async function TrackDetailPage({
   params,
@@ -11,7 +12,10 @@ export default async function TrackDetailPage({
 
   const track = await db.track.findUnique({
     where: { id },
-    include: { producer: { select: { id: true, name: true } } },
+    include: {
+      producer: { select: { id: true, name: true } },
+      licenses: { where: { active: true } },
+    },
   });
 
   if (!track || track.status === "TAKEN_DOWN") {
@@ -52,6 +56,10 @@ export default async function TrackDetailPage({
       )}
 
       <audio controls src={track.audioFileUrl} className="w-full" />
+
+      {track.status === "ACTIVE" && (
+        <BuyForm trackId={track.id} licenses={track.licenses} />
+      )}
     </main>
   );
 }

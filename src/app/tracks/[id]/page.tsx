@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { BuyForm } from "./buy-form";
 
@@ -9,6 +10,7 @@ export default async function TrackDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const session = await auth();
 
   const track = await db.track.findUnique({
     where: { id },
@@ -22,34 +24,54 @@ export default async function TrackDetailPage({
     notFound();
   }
 
+  const isOwner = session?.user?.id === track.producer.id;
+
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-16">
-      <div className="aspect-square w-full overflow-hidden rounded bg-gray-100">
-        {track.coverArtUrl && (
+    <main className="page-medium">
+      <Link href="/browse" className="link text-sm">
+        ← Back to browse
+      </Link>
+
+      <div className="aspect-square w-full overflow-hidden rounded-xl bg-surface">
+        {track.coverArtUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={track.coverArtUrl}
             alt={track.title}
             className="h-full w-full object-cover"
           />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-5xl text-muted">
+            ♪
+          </div>
         )}
       </div>
 
-      <div>
-        <h1 className="text-2xl font-semibold">{track.title}</h1>
-        <p className="text-gray-500">
-          {track.genre} · {track.bpm} BPM{track.key ? ` · ${track.key}` : ""}
-        </p>
-        <Link
-          href={`/producers/${track.producer.id}`}
-          className="text-sm underline"
-        >
-          {track.producer.name ?? "Unknown producer"}
-        </Link>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">{track.title}</h1>
+          <p className="text-muted">
+            {track.genre} · {track.bpm} BPM{track.key ? ` · ${track.key}` : ""}
+          </p>
+          <Link
+            href={`/producers/${track.producer.id}`}
+            className="link text-sm"
+          >
+            {track.producer.name ?? "Unknown producer"}
+          </Link>
+        </div>
+        {isOwner && (
+          <Link
+            href={`/dashboard/tracks/${track.id}`}
+            className="btn-secondary shrink-0"
+          >
+            Manage pricing
+          </Link>
+        )}
       </div>
 
       {track.status === "SOLD_EXCLUSIVE" && (
-        <p className="rounded bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+        <p className="notice-warning">
           This beat has been sold exclusively and is no longer available for
           new licenses.
         </p>
@@ -57,7 +79,7 @@ export default async function TrackDetailPage({
 
       <audio controls src={track.audioFileUrl} className="w-full" />
 
-      {track.status === "ACTIVE" && (
+      {track.status === "ACTIVE" && !isOwner && (
         <BuyForm trackId={track.id} licenses={track.licenses} />
       )}
     </main>

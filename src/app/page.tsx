@@ -5,31 +5,29 @@ export default async function Home() {
   const session = await auth();
 
   return (
-    <main className="mx-auto flex max-w-sm flex-col items-center gap-6 px-4 py-32 text-center">
-      <h1 className="text-3xl font-semibold">Trackyard</h1>
-      <p className="text-gray-600">Beats marketplace and social platform.</p>
+    <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-24 text-center">
+      <h1 className="text-4xl font-semibold tracking-tight">
+        Track<span className="text-accent">yard</span>
+      </h1>
+      <p className="max-w-sm text-muted">
+        Upload beats, sell licenses, and find your next placement — all in
+        one place.
+      </p>
 
-      <Link href="/browse" className="underline">
-        Browse beats
-      </Link>
-
-      {session?.user ? (
-        <Link
-          href="/profile"
-          className="rounded bg-black px-4 py-2 text-white"
-        >
-          Go to your profile
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <Link href="/browse" className="btn-primary">
+          Browse beats
         </Link>
-      ) : (
-        <div className="flex gap-3">
-          <Link href="/login" className="rounded border px-4 py-2">
-            Log in
+        {session?.user ? (
+          <Link href="/dashboard" className="btn-secondary">
+            Go to your dashboard
           </Link>
-          <Link href="/signup" className="rounded bg-black px-4 py-2 text-white">
-            Sign up
+        ) : (
+          <Link href="/signup" className="btn-secondary">
+            Create an account
           </Link>
-        </div>
-      )}
+        )}
+      </div>
     </main>
   );
 }

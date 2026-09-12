@@ -16,23 +16,26 @@ export default async function DashboardPage() {
   });
 
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-16">
-      <div className="flex items-center justify-between">
+    <main className="page-medium">
+      <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">Your tracks</h1>
-        <div className="flex gap-3">
-          <Link href={`/producers/${session.user.id}`} className="self-center text-sm underline">
+        <div className="flex items-center gap-3">
+          <Link href={`/producers/${session.user.id}`} className="link text-sm">
             View public page
           </Link>
-          <Link href="/upload" className="rounded bg-black px-4 py-2 text-white">
+          <Link href="/upload" className="btn-primary">
             Upload a beat
           </Link>
         </div>
       </div>
 
       {tracks.length === 0 ? (
-        <p className="text-gray-500">
-          You haven&apos;t uploaded any beats yet.
-        </p>
+        <div className="card flex flex-col items-center gap-3 py-10 text-center">
+          <p className="text-muted">You haven&apos;t uploaded any beats yet.</p>
+          <Link href="/upload" className="btn-primary">
+            Upload your first beat
+          </Link>
+        </div>
       ) : (
         <ul className="flex flex-col gap-3">
           {tracks.map((track) => (

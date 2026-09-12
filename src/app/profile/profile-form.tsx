@@ -12,39 +12,35 @@ export function ProfileForm({ name, bio }: { name: string; bio: string }) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       <label className="flex flex-col gap-1">
-        <span className="text-sm font-medium">Name</span>
+        <span className="label">Name</span>
         <input
           name="name"
           type="text"
           defaultValue={name}
           required
-          className="rounded border px-3 py-2"
+          className="input"
         />
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="text-sm font-medium">Bio</span>
+        <span className="label">Bio</span>
         <textarea
           name="bio"
           defaultValue={bio}
           maxLength={500}
           rows={4}
-          className="rounded border px-3 py-2"
+          className="input"
         />
       </label>
 
       {state && "error" in state && (
-        <p className="text-sm text-red-600">{state.error}</p>
+        <p className="text-sm text-danger">{state.error}</p>
       )}
       {state && "success" in state && (
-        <p className="text-sm text-green-600">Saved.</p>
+        <p className="text-sm text-success">Saved.</p>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className="btn-primary">
         {pending ? "Saving..." : "Save changes"}
       </button>
     </form>

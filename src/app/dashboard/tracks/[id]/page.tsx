@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -27,22 +28,31 @@ export default async function TrackPricingPage({
   const exclusive = track.licenses.find((l) => l.type === "EXCLUSIVE");
 
   return (
-    <main className="mx-auto flex max-w-sm flex-col gap-6 px-4 py-16">
-      <h1 className="text-2xl font-semibold">Pricing for &quot;{track.title}&quot;</h1>
+    <main className="page-narrow">
+      <div>
+        <Link href="/dashboard" className="link text-sm">
+          ← Back to your tracks
+        </Link>
+        <h1 className="mt-2 text-2xl font-semibold">
+          Pricing for &quot;{track.title}&quot;
+        </h1>
+      </div>
 
       {track.status === "SOLD_EXCLUSIVE" && (
-        <p className="rounded bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+        <p className="notice-warning">
           This beat was sold exclusively, so it&apos;s no longer available for
           new licenses.
         </p>
       )}
 
-      <PricingForm
-        trackId={track.id}
-        oneTimePrice={oneTime?.active ? oneTime.price / 100 : 0}
-        exclusivePrice={exclusive?.active ? exclusive.price / 100 : 0}
-        exclusiveLocked={track.status === "SOLD_EXCLUSIVE"}
-      />
+      <div className="card">
+        <PricingForm
+          trackId={track.id}
+          oneTimePrice={oneTime?.active ? oneTime.price / 100 : 0}
+          exclusivePrice={exclusive?.active ? exclusive.price / 100 : 0}
+          exclusiveLocked={track.status === "SOLD_EXCLUSIVE"}
+        />
+      </div>
     </main>
   );
 }

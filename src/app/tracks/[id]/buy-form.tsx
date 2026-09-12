@@ -8,6 +8,17 @@ function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+const LICENSE_INFO: Record<LicenseType, { label: string; description: string }> = {
+  ONE_TIME: {
+    label: "One-time use",
+    description: "Use this beat in one project. Others can license it too.",
+  },
+  EXCLUSIVE: {
+    label: "Exclusive",
+    description: "You own it outright — it's delisted for everyone else.",
+  },
+};
+
 export function BuyForm({
   trackId,
   licenses,
@@ -21,9 +32,7 @@ export function BuyForm({
 
   if (licenses.length === 0) {
     return (
-      <p className="text-sm text-gray-500">
-        This beat isn&apos;t listed for sale yet.
-      </p>
+      <p className="notice-info">This beat isn&apos;t listed for sale yet.</p>
     );
   }
 
@@ -39,31 +48,36 @@ export function BuyForm({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded border p-4">
-      <p className="rounded bg-blue-50 px-3 py-2 text-sm text-blue-800">
+    <div className="flex flex-col gap-3">
+      <p className="notice-warning">
         Test mode: purchases here don&apos;t move real money yet.
       </p>
 
-      {licenses.map((license) => (
-        <div
-          key={license.type}
-          className="flex items-center justify-between gap-3"
-        >
-          <span className="text-sm">
-            {license.type === "ONE_TIME" ? "One-time use" : "Exclusive"} —{" "}
-            {formatPrice(license.price)}
-          </span>
-          <button
-            onClick={() => handleBuy(license.type)}
-            disabled={isPending}
-            className="rounded bg-black px-4 py-2 text-sm text-white disabled:opacity-50"
-          >
-            {isPending && buying === license.type ? "Buying..." : "Buy"}
-          </button>
-        </div>
-      ))}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {licenses.map((license) => {
+          const info = LICENSE_INFO[license.type];
+          return (
+            <div key={license.type} className="card flex flex-col gap-3">
+              <div>
+                <p className="font-medium">{info.label}</p>
+                <p className="text-sm text-muted">{info.description}</p>
+              </div>
+              <p className="text-2xl font-semibold">
+                {formatPrice(license.price)}
+              </p>
+              <button
+                onClick={() => handleBuy(license.type)}
+                disabled={isPending}
+                className="btn-primary"
+              >
+                {isPending && buying === license.type ? "Buying..." : "Buy"}
+              </button>
+            </div>
+          );
+        })}
+      </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
     </div>
   );
 }

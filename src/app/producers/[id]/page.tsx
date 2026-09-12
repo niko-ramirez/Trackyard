@@ -27,17 +27,26 @@ export default async function ProducerPage({
     },
   });
 
+  const initial = (producer.name || "?").charAt(0).toUpperCase();
+
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-16">
-      <div>
-        <h1 className="text-2xl font-semibold">
-          {producer.name ?? "Unknown producer"}
-        </h1>
-        {producer.bio && <p className="text-gray-500">{producer.bio}</p>}
+    <main className="page">
+      <div className="flex items-center gap-4">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xl font-semibold text-accent">
+          {initial}
+        </div>
+        <div>
+          <h1 className="text-2xl font-semibold">
+            {producer.name ?? "Unknown producer"}
+          </h1>
+          {producer.bio && <p className="text-muted">{producer.bio}</p>}
+        </div>
       </div>
 
       {tracks.length === 0 ? (
-        <p className="text-gray-500">No beats listed yet.</p>
+        <div className="card py-10 text-center text-muted">
+          No beats listed yet.
+        </div>
       ) : (
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {tracks.map((track) => (

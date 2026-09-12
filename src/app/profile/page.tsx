@@ -1,9 +1,13 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { logoutAction } from "../(auth)/actions";
 import { ProfileForm } from "./profile-form";
+
+const ROLE_LABELS: Record<string, string> = {
+  PRODUCER: "Producer",
+  ARTIST: "Artist",
+  BOTH: "Producer & Artist",
+};
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -15,37 +19,26 @@ export default async function ProfilePage() {
     where: { id: session.user.id },
   });
 
-  return (
-    <main className="mx-auto flex max-w-sm flex-col gap-6 px-4 py-16">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Your profile</h1>
-        <form action={logoutAction}>
-          <button type="submit" className="text-sm underline">
-            Log out
-          </button>
-        </form>
-      </div>
+  const initial = (user.name || user.email).charAt(0).toUpperCase();
 
-      <div className="flex items-center gap-3">
-        <div className="h-16 w-16 rounded-full bg-gray-200" />
+  return (
+    <main className="page-narrow">
+      <h1 className="text-2xl font-semibold">Your profile</h1>
+
+      <div className="card flex items-center gap-4">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xl font-semibold text-accent">
+          {initial}
+        </div>
         <div>
-          <p className="text-sm text-gray-500">{user.email}</p>
-          <p className="text-sm text-gray-500">Role: {user.role}</p>
+          <p className="text-sm text-muted">{user.email}</p>
+          <span className="badge mt-1">
+            {ROLE_LABELS[user.role] ?? user.role}
+          </span>
         </div>
       </div>
 
-      <ProfileForm name={user.name ?? ""} bio={user.bio ?? ""} />
-
-      <div className="flex gap-4 border-t pt-4 text-sm">
-        <Link href="/dashboard" className="underline">
-          Your tracks
-        </Link>
-        <Link href="/upload" className="underline">
-          Upload a beat
-        </Link>
-        <Link href="/purchases" className="underline">
-          Your purchases
-        </Link>
+      <div className="card">
+        <ProfileForm name={user.name ?? ""} bio={user.bio ?? ""} />
       </div>
     </main>
   );

@@ -54,6 +54,7 @@ export default async function BrowsePage({
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const hasFilters = Boolean(q || genre || minBpm !== undefined || maxBpm !== undefined);
 
   function pageHref(targetPage: number) {
     const next = new URLSearchParams(
@@ -67,70 +68,73 @@ export default async function BrowsePage({
   }
 
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-16">
+    <main className="page">
       <h1 className="text-2xl font-semibold">Browse beats</h1>
 
-      <form className="flex flex-wrap items-end gap-3" action="/browse">
+      <form className="card flex flex-wrap items-end gap-3" action="/browse">
         <label className="flex flex-col gap-1">
-          <span className="text-sm font-medium">Search</span>
+          <span className="label">Search</span>
           <input
             name="q"
             type="text"
             defaultValue={q}
             placeholder="Title"
-            className="rounded border px-3 py-2"
+            className="input"
           />
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="text-sm font-medium">Genre</span>
+          <span className="label">Genre</span>
           <input
             name="genre"
             type="text"
             defaultValue={genre}
-            className="w-32 rounded border px-3 py-2"
+            className="input w-32"
           />
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="text-sm font-medium">Min BPM</span>
+          <span className="label">Min BPM</span>
           <input
             name="minBpm"
             type="number"
             defaultValue={minBpm}
-            className="w-24 rounded border px-3 py-2"
+            className="input w-24"
           />
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="text-sm font-medium">Max BPM</span>
+          <span className="label">Max BPM</span>
           <input
             name="maxBpm"
             type="number"
             defaultValue={maxBpm}
-            className="w-24 rounded border px-3 py-2"
+            className="input w-24"
           />
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="text-sm font-medium">Sort</span>
-          <select
-            name="sort"
-            defaultValue={sort}
-            className="rounded border px-3 py-2"
-          >
+          <span className="label">Sort</span>
+          <select name="sort" defaultValue={sort} className="input">
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
           </select>
         </label>
 
-        <button type="submit" className="rounded bg-black px-4 py-2 text-white">
+        <button type="submit" className="btn-primary">
           Apply
         </button>
+        {hasFilters && (
+          <Link href="/browse" className="btn-ghost">
+            Clear
+          </Link>
+        )}
       </form>
 
       {tracks.length === 0 ? (
-        <p className="text-gray-500">No beats match those filters.</p>
+        <div className="card py-10 text-center text-muted">
+          No beats match those filters.
+        </div>
       ) : (
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {tracks.map((track) => (
@@ -139,25 +143,27 @@ export default async function BrowsePage({
         </ul>
       )}
 
-      <div className="flex items-center justify-between text-sm">
-        {page > 1 ? (
-          <Link href={pageHref(page - 1)} className="underline">
-            Previous
-          </Link>
-        ) : (
-          <span />
-        )}
-        <span className="text-gray-500">
-          Page {page} of {totalPages}
-        </span>
-        {page < totalPages ? (
-          <Link href={pageHref(page + 1)} className="underline">
-            Next
-          </Link>
-        ) : (
-          <span />
-        )}
-      </div>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between text-sm">
+          {page > 1 ? (
+            <Link href={pageHref(page - 1)} className="btn-secondary">
+              ← Previous
+            </Link>
+          ) : (
+            <span />
+          )}
+          <span className="text-muted">
+            Page {page} of {totalPages}
+          </span>
+          {page < totalPages ? (
+            <Link href={pageHref(page + 1)} className="btn-secondary">
+              Next →
+            </Link>
+          ) : (
+            <span />
+          )}
+        </div>
+      )}
     </main>
   );
 }

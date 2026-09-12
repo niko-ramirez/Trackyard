@@ -7,6 +7,15 @@ function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+function formatDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+const LICENSE_LABELS: Record<string, string> = {
+  ONE_TIME: "One-time use",
+  EXCLUSIVE: "Exclusive",
+};
+
 export default async function PurchasesPage() {
   const session = await auth();
   if (!session?.user) {
@@ -20,35 +29,44 @@ export default async function PurchasesPage() {
   });
 
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-16">
+    <main className="page-medium">
       <h1 className="text-2xl font-semibold">Your purchases</h1>
 
       {purchases.length === 0 ? (
-        <p className="text-gray-500">
-          You haven&apos;t bought any licenses yet.{" "}
-          <Link href="/browse" className="underline">
+        <div className="card flex flex-col items-center gap-3 py-10 text-center">
+          <p className="text-muted">You haven&apos;t bought any licenses yet.</p>
+          <Link href="/browse" className="btn-primary">
             Browse beats
           </Link>
-          .
-        </p>
+        </div>
       ) : (
         <ul className="flex flex-col gap-3">
           {purchases.map((purchase) => (
-            <li key={purchase.id} className="flex flex-col gap-2 rounded border p-3">
-              <div className="flex items-center justify-between">
-                <Link href={`/tracks/${purchase.trackId}`} className="font-medium underline">
+            <li key={purchase.id} className="card flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-2">
+                <Link
+                  href={`/tracks/${purchase.trackId}`}
+                  className="font-medium hover:text-accent"
+                >
                   {purchase.track.title}
                 </Link>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-muted">
                   {formatPrice(purchase.priceAtSale)}
                 </span>
               </div>
-              <p className="text-sm text-gray-500">
-                {purchase.licenseType === "ONE_TIME" ? "One-time use" : "Exclusive"}{" "}
-                license · {purchase.status} ·{" "}
-                {purchase.createdAt.toLocaleDateString()}
-              </p>
-              <audio controls src={purchase.track.audioFileUrl} className="w-full" />
+              <div className="flex items-center gap-2 text-sm text-muted">
+                <span className="badge">
+                  {LICENSE_LABELS[purchase.licenseType] ?? purchase.licenseType}
+                </span>
+                <span>{purchase.status}</span>
+                <span>·</span>
+                <span>{formatDate(purchase.createdAt)}</span>
+              </div>
+              <audio
+                controls
+                src={purchase.track.audioFileUrl}
+                className="w-full"
+              />
             </li>
           ))}
         </ul>

@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  PRODUCER
+  ARTIST
+  BOTH
+}
+
+enum TrackStatus {
+  ACTIVE
+  SOLD_EXCLUSIVE
+  TAKEN_DOWN
+}
+
+enum LicenseType {
+  ONE_TIME
+  EXCLUSIVE
+}
+
+enum FingerprintStatus {
+  PENDING
+  CLEAR
+  FLAGGED
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  passwordHash    String?
+  name            String?
+  role            Role     @default(BOTH)
+  bio             String?
+  avatarUrl       String?
+  createdAt       DateTime @default(now())
+  stripeAccountId String? // added in a later phase, unused for now
+
+  tracks    Track[]    @relation("ProducerTracks")
+  purchases Purchase[]
+}
+
+model Track {
+  id                String             @id @default(cuid())
+  producerId        String
+  producer          User               @relation("ProducerTracks", fields: [producerId], references: [id])
+  title             String
+  genre             String
+  bpm               Int
+  key               String?
+  audioFileUrl      String
+  coverArtUrl       String?
+  status            TrackStatus        @default(ACTIVE)
+  createdAt         DateTime           @default(now())
+  fingerprintStatus FingerprintStatus? // placeholder for a later sample-protection phase, unused for now
+
+  licenses  LicenseOption[]
+  purchases Purchase[]
+
+  @@index([status, createdAt])
+}
+
+model LicenseOption {
+  id      String      @id @default(cuid())
+  trackId String
+  track   Track       @relation(fields: [trackId], references: [id])
+  type    LicenseType
+  price   Int // cents
+  active  Boolean     @default(true)
+
+  @@unique([trackId, type])
+}
+
+model Purchase {
+  id                    String         @id @default(cuid())
+  buyerId               String
+  buyer                 User           @relation(fields: [buyerId], references: [id])
+  trackId               String
+  track                 Track          @relation(fields: [trackId], references: [id])
+  licenseType           LicenseType
+  priceAtSale           Int // cents, snapshot at time of sale
+  status                PurchaseStatus @default(COMPLETED)
+  createdAt             DateTime       @default(now())
+  stripePaymentIntentId String? // placeholder for a later real-payments phase, unused for now
+}
